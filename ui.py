@@ -29,6 +29,8 @@ class MainWindow(QMainWindow):
         hnum = QHBoxLayout()
         hnum.addWidget(QLabel("Number of employees:"))
         self.num_input = QLineEdit()
+        self.num_input.setValidator(QIntValidator(1, 1000000))
+        self.num_input.setPlaceholderText("Enter an integer (e.g. 100)")
         hnum.addWidget(self.num_input)
         layout.addLayout(hnum)
 
