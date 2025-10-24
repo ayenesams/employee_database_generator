@@ -1,4 +1,5 @@
 import os
+from typing import Optional
 from PySide6.QtWidgets import (
     QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
     QLabel, QLineEdit, QPushButton, QFileDialog, QMessageBox,
@@ -36,6 +37,7 @@ class MainWindow(QMainWindow):
 
         actions = QHBoxLayout()
         gen_btn = QPushButton("Generate Data")
+        gen_btn.clicked.connect(self.on_generate)
         export_btn = QPushButton("Export to Excel")
         actions.addWidget(gen_btn)
         actions.addWidget(export_btn)
@@ -49,3 +51,19 @@ class MainWindow(QMainWindow):
         if folder:
             self.folder = folder
             self.folder_label.setText(self.folder)
+
+    def on_generate(self):
+        num_text = self.num_input.text().strip()
+        if not num_text:
+            QMessageBox.warning(self, "Input required", "Please enter number of employees.")
+            return
+        try:
+            n = int(num_text)
+            if n <= 0:
+                raise ValueError
+        except ValueError:
+            QMessageBox.warning(self, "Invalid input", "Please enter a positive integer.")
+            return
+        self.df = self.generator.generate(n)
+        QMessageBox.information(self, "Data Generated", f"Generated {len(self.df)} employees.")
+        self.status_label.setText("")
