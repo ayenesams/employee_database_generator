@@ -7,12 +7,15 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtGui import QIntValidator
 
+from generator import DataGenerator
+
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Employee Database Generator")
         self.folder: Optional[str] = None
         self.df = None
+        self.generator = DataGenerator(use_api=True)
         self._init_ui()
 
     def _init_ui(self):
