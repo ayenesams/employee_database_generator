@@ -1,0 +1,51 @@
+import os
+from PySide6.QtWidgets import (
+    QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
+    QLabel, QLineEdit, QPushButton, QFileDialog, QMessageBox,
+    QTableWidget, QTableWidgetItem, QHeaderView
+)
+from PySide6.QtGui import QIntValidator
+
+class MainWindow(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("Employee Database Generator")
+        self.folder: Optional[str] = None
+        self.df = None
+        self._init_ui()
+
+    def _init_ui(self):
+        central = QWidget()
+        self.setCentralWidget(central)
+        layout = QVBoxLayout()
+        central.setLayout(layout)
+
+        hnum = QHBoxLayout()
+        hnum.addWidget(QLabel("Number of employees:"))
+        self.num_input = QLineEdit()
+        hnum.addWidget(self.num_input)
+        layout.addLayout(hnum)
+
+        hfolder = QHBoxLayout()
+        self.folder_label = QLabel("No folder selected")
+        select_btn = QPushButton("Select Folder")
+        select_btn.clicked.connect(self.select_folder)
+        hfolder.addWidget(select_btn)
+        hfolder.addWidget(self.folder_label)
+        layout.addLayout(hfolder)
+
+        actions = QHBoxLayout()
+        gen_btn = QPushButton("Generate Data")
+        export_btn = QPushButton("Export to Excel")
+        actions.addWidget(gen_btn)
+        actions.addWidget(export_btn)
+        layout.addLayout(actions)
+
+        self.status_label = QLabel("")
+        layout.addWidget(self.status_label)
+
+    def select_folder(self):
+        folder = QFileDialog.getExistingDirectory(self, "Select Folder")
+        if folder:
+            self.folder = folder
+            self.folder_label.setText(self.folder)
