@@ -8,6 +8,7 @@ from PySide6.QtWidgets import (
 from PySide6.QtGui import QIntValidator
 
 from generator import DataGenerator
+from exporter import ExcelExporter
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -16,6 +17,7 @@ class MainWindow(QMainWindow):
         self.folder: Optional[str] = None
         self.df = None
         self.generator = DataGenerator(use_api=True)
+        self.exporter = ExcelExporter()
         self._init_ui()
 
     def _init_ui(self):
@@ -42,6 +44,7 @@ class MainWindow(QMainWindow):
         gen_btn = QPushButton("Generate Data")
         gen_btn.clicked.connect(self.on_generate)
         export_btn = QPushButton("Export to Excel")
+        export_btn.clicked.connect(self.on_export)
         actions.addWidget(gen_btn)
         actions.addWidget(export_btn)
         layout.addLayout(actions)
@@ -70,3 +73,17 @@ class MainWindow(QMainWindow):
         self.df = self.generator.generate(n)
         QMessageBox.information(self, "Data Generated", f"Generated {len(self.df)} employees.")
         self.status_label.setText("")
+
+    def on_export(self):
+        if self.df is None:
+            QMessageBox.warning(self, "No data", "Please generate data first.")
+            return
+        if not self.folder:
+            QMessageBox.warning(self, "No folder", "Please select a folder to save the Excel file.")
+            return
+        try:
+            filepath = self.exporter.export(self.df, self.folder)
+            self.status_label.setText(f"File Generated: {filepath}")
+            QMessageBox.information(self, "Exported", f"File saved to:\n{filepath}")
+        except Exception as e:
+            QMessageBox.critical(self, "Export Error", f"Failed to export Excel:\n{e}")
